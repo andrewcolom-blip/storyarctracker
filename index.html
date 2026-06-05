@@ -318,15 +318,18 @@ let state = JSON.parse(JSON.stringify(DEFAULTS));
 
 async function loadState() {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/tracker_state?select=value&limit=1&order=created_at.desc`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/tracker_state?key=eq.main&select=value&limit=1`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
     });
     const rows = await res.json();
     if (rows && rows.length && rows[0].value) {
       const saved = JSON.parse(rows[0].value);
       state = Object.assign({}, DEFAULTS, saved);
     }
-  } catch(e) {}
+  } catch(e) { console.error('load error', e); }
 }
 
 let saveTimer = null;
@@ -337,23 +340,26 @@ function saveState() {
   saveTimer = setTimeout(async () => {
     try {
       const payload = JSON.stringify(state);
-      // delete all rows then insert fresh — simple single-user approach
-      await fetch(`${SUPABASE_URL}/rest/v1/tracker_state?created_at=neq.null`, {
-        method: 'DELETE',
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-      });
-      await fetch(`${SUPABASE_URL}/rest/v1/tracker_state`, {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/tracker_state`, {
         method: 'POST',
         headers: {
           'apikey': SUPABASE_KEY,
           'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
         },
-        body: JSON.stringify({ value: payload })
+        body: JSON.stringify({ key: 'main', value: payload })
       });
-      if (bar) { bar.textContent = 'SAVED ✓'; setTimeout(() => { bar.textContent = ''; }, 1200); }
+      if (res.ok || res.status === 201 || res.status === 200) {
+        if (bar) { bar.textContent = 'SAVED ✓'; setTimeout(() => { if(bar) bar.textContent = ''; }, 1200); }
+      } else {
+        const err = await res.text();
+        console.error('save error', res.status, err);
+        if (bar) { bar.textContent = 'SAVE FAILED'; setTimeout(() => { if(bar) bar.textContent = ''; }, 2000); }
+      }
     } catch(e) {
-      if (bar) { bar.textContent = 'SAVE FAILED'; setTimeout(() => { bar.textContent = ''; }, 2000); }
+      console.error('save exception', e);
+      if (bar) { bar.textContent = 'SAVE FAILED'; setTimeout(() => { if(bar) bar.textContent = ''; }, 2000); }
     }
   }, 400);
 }
