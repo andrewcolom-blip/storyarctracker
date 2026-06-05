@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Thread — ARC</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#fff;color:#1a1a1a;font-family:'Courier Prime','Courier New',monospace;min-height:100vh;}
+.wrap{max-width:680px;margin:0 auto;padding-bottom:80px;}
+
+/* HEADER */
+.header{padding:20px 18px 0;border-bottom:1px solid #ddd;display:flex;align-items:flex-end;justify-content:space-between;}
+.header-left .header-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.15em;color:#c9a84c;}
+.header-left .header-sub{font-size:10px;letter-spacing:0.3em;color:#aaa;margin-bottom:12px;text-transform:uppercase;}
+.edit-toggle{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:0.2em;padding:5px 12px;border-radius:3px;border:1.5px solid #ddd;background:#fff;color:#aaa;cursor:pointer;margin-bottom:12px;transition:all 0.15s;}
+.edit-toggle.active{border-color:#c9a84c;color:#c9a84c;background:#fffbf0;}
+
+/* TABS */
+.tabs{display:flex;overflow-x:auto;scrollbar-width:none;background:#f2f2f2;border-bottom:1px solid #ddd;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.12em;color:#999;background:none;border:none;border-bottom:2px solid transparent;padding:10px 16px;cursor:pointer;white-space:nowrap;transition:all 0.15s;}
+.tab.on{color:#c9a84c;border-bottom-color:#c9a84c;}
+.tab:hover:not(.on){color:#777;}
+.save-bar{font-size:9px;letter-spacing:0.2em;color:#4caf7d;text-align:right;padding:4px 18px;height:22px;background:#fff;}
+.body{padding:16px 18px;}
+
+/* LABELS */
+.lbl{font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:0.25em;color:#aaa;text-transform:uppercase;margin-bottom:10px;margin-top:4px;}
+
+/* PROPERTIES */
+.prop{background:#fafafa;border:1px solid #e0e0e0;border-left:3px solid;border-radius:3px;padding:13px 14px;margin-bottom:9px;position:relative;}
+.prop-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px;}
+.prop-name{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:0.08em;line-height:1;}
+.prop-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.badge{font-size:9px;letter-spacing:0.12em;padding:2px 7px;border-radius:2px;font-weight:700;white-space:nowrap;}
+.prop-platform{font-size:10px;color:#999;letter-spacing:0.08em;margin-bottom:4px;}
+.prop-desc{font-size:11px;color:#555;line-height:1.6;margin-bottom:6px;}
+.prop-action{font-size:10px;color:#999;font-style:italic;border-top:1px solid #eee;padding-top:6px;line-height:1.5;}
+
+/* CHECKLIST ROWS */
+.tr{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid #eee;user-select:none;}
+.tr:last-child{border-bottom:none;}
+.chk{width:15px;height:15px;border:1.5px solid #ccc;border-radius:2px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;cursor:pointer;}
+.chk.gld{background:#c9a84c;border-color:#c9a84c;}
+.chk.red{background:#c0392b;border-color:#c0392b;}
+.chk.pk{background:#e84393;border-color:#e84393;}
+.chk.grn{background:#4caf7d;border-color:#4caf7d;}
+.cm{color:#fff;font-size:9px;font-weight:bold;line-height:1;}
+.tt{font-size:11px;color:#333;line-height:1.5;flex:1;cursor:pointer;}
+.tt.dn{color:#bbb;text-decoration:line-through;}
+.pri{font-size:8px;letter-spacing:0.15em;padding:1px 5px;border-radius:2px;margin-top:2px;flex-shrink:0;}
+
+/* BOXES */
+.box{background:#fafafa;border:1px solid #e0e0e0;border-left:3px solid;border-radius:3px;padding:11px 13px;margin-bottom:8px;}
+.box-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.1em;margin-bottom:4px;}
+.box-body{font-size:11px;color:#777;line-height:1.6;}
+.alert{border-radius:3px;padding:11px 13px;margin-bottom:12px;font-size:11px;line-height:1.55;}
+.alert strong{font-family:'Bebas Neue',sans-serif;letter-spacing:0.08em;font-size:12px;display:block;margin-bottom:3px;}
+.prog-lbl{font-size:10px;color:#aaa;letter-spacing:0.15em;margin-bottom:3px;}
+.prog-wrap{background:#e0e0e0;border-radius:2px;height:3px;margin:5px 0 16px;}
+.prog-fill{height:3px;border-radius:2px;transition:width 0.4s ease;}
+.colterra-header{background:#fff0f7;border:1px solid #f0c0d8;border-left:3px solid #e84393;border-radius:3px;padding:13px 14px;margin-bottom:12px;}
+
+/* EDIT MODE STYLES */
+.edit-actions{display:flex;gap:6px;margin-top:4px;flex-shrink:0;}
+.btn-edit,.btn-del,.btn-add,.btn-save-item,.btn-cancel{font-family:'Courier Prime',monospace;font-size:10px;padding:2px 8px;border-radius:2px;border:1px solid;cursor:pointer;transition:all 0.12s;background:#fff;}
+.btn-edit{border-color:#ddd;color:#999;}
+.btn-edit:hover{border-color:#c9a84c;color:#c9a84c;}
+.btn-del{border-color:#ddd;color:#ccc;}
+.btn-del:hover{border-color:#c0392b;color:#c0392b;}
+.btn-add{border-color:#c9a84c;color:#c9a84c;font-size:11px;padding:4px 12px;margin-top:8px;display:inline-block;}
+.btn-add:hover{background:#fffbf0;}
+.btn-save-item{border-color:#4caf7d;color:#4caf7d;}
+.btn-save-item:hover{background:#f0fff4;}
+.btn-cancel{border-color:#ddd;color:#aaa;}
+.btn-cancel:hover{border-color:#999;color:#777;}
+
+/* INLINE EDIT FORM */
+.edit-form{background:#fffbf0;border:1px solid #e8d88a;border-radius:3px;padding:10px 12px;margin:6px 0;}
+.edit-form input,.edit-form textarea,.edit-form select{width:100%;font-family:'Courier Prime',monospace;font-size:11px;border:1px solid #e0e0e0;border-radius:2px;padding:5px 8px;margin-bottom:6px;background:#fff;color:#1a1a1a;outline:none;}
+.edit-form input:focus,.edit-form textarea:focus,.edit-form select:focus{border-color:#c9a84c;}
+.edit-form textarea{resize:vertical;min-height:52px;}
+.edit-form label{font-size:9px;letter-spacing:0.2em;color:#aaa;text-transform:uppercase;display:block;margin-bottom:2px;}
+.edit-form .form-row{display:flex;gap:8px;}
+.edit-form .form-row > div{flex:1;}
+.edit-form .form-btns{display:flex;gap:6px;margin-top:2px;}
+
+/* PROP EDIT FORM */
+.prop-edit-form{background:#fffbf0;border:1px solid #e8d88a;border-radius:3px;padding:12px 14px;margin-bottom:9px;}
+.prop-edit-form input,.prop-edit-form textarea,.prop-edit-form select{width:100%;font-family:'Courier Prime',monospace;font-size:11px;border:1px solid #e0e0e0;border-radius:2px;padding:5px 8px;margin-bottom:6px;background:#fff;color:#1a1a1a;outline:none;}
+.prop-edit-form input:focus,.prop-edit-form select:focus,.prop-edit-form textarea:focus{border-color:#c9a84c;}
+.prop-edit-form textarea{resize:vertical;min-height:52px;}
+.prop-edit-form label{font-size:9px;letter-spacing:0.2em;color:#aaa;text-transform:uppercase;display:block;margin-bottom:2px;}
+.prop-edit-form .form-row{display:flex;gap:8px;}
+.prop-edit-form .form-row > div{flex:1;}
+.prop-edit-form .form-btns{display:flex;gap:6px;margin-top:4px;}
+
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.tr-edit-wrap{position:relative;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="header-left">
+      <div class="header-title">Brand Thread</div>
+      <div class="header-sub">ARC · Story ARC Command</div>
+    </div>
+    <button class="edit-toggle" id="editToggle" onclick="toggleEdit()">EDIT MODE</button>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="save-bar" id="savebar"></div>
+  <div class="body" id="body"></div>
+</div>
+
+<script>
+const SK = 'arc-brand-tracker-v3';
+let editMode = false;
+let tab = 'properties';
+let editingId = null; // which item is open for editing
+
+// ── DEFAULT DATA ──────────────────────────────────────────────
+const DEFAULTS = {
+  done: {},
+  properties: [
+    {id:'p1',name:'Rap Fiction',role:'FLAGSHIP',status:'ACTIVE',color:'#c9a84c',platform:'Substack · rapfiction.substack.com',desc:'The one front door. The genre home, the prose, the novel. Everything feeds or folds into this.',action:'Needs: Start Here post, about page rewrite, welcome email, novel landing page.'},
+    {id:'p2',name:'Flash-Style Battle',role:'FEEDER SATELLITE',status:'ACTIVE',color:'#4caf7d',platform:'Substack · flashstyle.substack.com',desc:'Events with stakes. Pulls in other writers and their audiences. Discovery engine. Points inward to flagship.',action:'Needs: reframe as a Rap Fiction franchise in the about page.'},
+    {id:'p3',name:'Story ARC',role:'NAME HOLD',status:'DORMANT',color:'#555555',platform:'Substack',desc:'Company name secured. Nothing lives here. Nothing needs to change.',action:'Leave alone. Name is protected.'},
+    {id:'p4',name:'Robert Colterra',role:'HETERONYM',status:'DORMANT',color:'#e84393',platform:'TBD — build before activating',desc:'The avatar. May be a real person. Exists independently of Andrew. Activates at novel launch — see checklist.',action:'Complete all 5 Colterra activation conditions first.'},
+    {id:'p5',name:"Scott's Campaign",role:'FIREWALLED',status:'ACTIVE',color:'#5b9bd5',platform:"Social — Scott's channels",desc:"Your face, not the mask. Lives on Scott's feed only. You share — the persona never narrates.",action:'Firewall holds. Never consolidated in. Never touched by Colterra.'},
+  ],
+  build: [
+    {id:'b1',text:"Write 'Start Here' post on Rap Fiction — manifesto + #1 on BlackList + one prose poem",priority:'high'},
+    {id:'b2',text:'Lock final tagline across ALL surfaces — profile, each pub, every social bio',priority:'high'},
+    {id:'b3',text:'Update Rap Fiction short description with the line we locked',priority:'high'},
+    {id:'b4',text:'Update Rap Fiction about page with the full copy we wrote',priority:'high'},
+    {id:'b5',text:'Apply author/avatar byline rule consistently to all existing posts',priority:'high'},
+    {id:'b6',text:'Build novel landing page + interest capture list',priority:'high'},
+    {id:'b7',text:'Write Rap Fiction welcome email — design the first 48 hours for new subscribers',priority:'medium'},
+    {id:'b8',text:'Reframe Flash-Style as a Rap Fiction franchise in its about page',priority:'medium'},
+    {id:'b9',text:'Upgrade Columbus song from a Note to a proper Rap Fiction post',priority:'medium'},
+    {id:'b10',text:'Collect interview + earned media — display it where new readers land',priority:'medium'},
+    {id:'b11',text:'Write 2–3 portable pieces — no Substack lore, built for cold readers',priority:'medium'},
+    {id:'b12',text:"Draw the heel line once — what the mask can and can't say given the firewall",priority:'medium'},
+    {id:'b13',text:'Build Colterra music home on chosen platform',priority:'low'},
+    {id:'b14',text:'Plan first music video — which vocalist becomes recurring cast',priority:'low'},
+  ],
+  colterra: [
+    {id:'c1',text:'Novel published or launch date locked and public'},
+    {id:'c2',text:'Colterra music home built and populated with content'},
+    {id:'c3',text:'First music video featuring a vocalist complete'},
+    {id:'c4',text:'Colterra bio written — no Andrew references, standalone life'},
+    {id:'c5',text:'Heel line drawn — all planned content stays ownable under real name'},
+  ],
+  ebtf: [
+    {id:'e1',text:'EBTF manuscript sent to Miranda + Charlotte — 5.20.26'},
+    {id:'e2',text:'Follow-up email to Miranda + Charlotte — scheduled 6.3.26'},
+    {id:'e3',text:'Work agents list in parallel'},
+    {id:'e4',text:'Work indy publishers list in parallel'},
+    {id:'e5',text:'Explore academic publishers'},
+    {id:'e6',text:'Self-publish as final option — non-negotiable, book comes out'},
+  ],
+  album: [
+    {id:'a1',text:'Intro: The Climb — lyrics done (Mahalia Jackson rap gospel mix)'},
+    {id:'a2',text:"Columbus' Echo — needs final mix and master. First Colterra song to the world."},
+    {id:'a3',text:'Cheater — DONE. Second Colterra release.'},
+    {id:'a4',text:'We Forgive You, Dean — lyrics done (Folk Rap)'},
+    {id:'a5',text:'Fat Like Raymond — notes only. Write full lyrics.'},
+    {id:'a6',text:'Bonafide — no lyrics yet. NY Funk Flex style.'},
+    {id:'a7',text:'My Neck (Disengagement) — lyrics done. Ref: Sinnerman by Nina Simone.'},
+    {id:'a8',text:'Departure, Arrival — no lyrics yet. Afro beats / Zimbabwe style.'},
+    {id:'a9',text:'Failure Song Outro — no lyrics yet.'},
+    {id:'a10',text:'Little Lost Prince (Footnote #1) — lyrics done'},
+    {id:'a11',text:'Footnote #2 — TBD'},
+    {id:'a12',text:'Judas (Footnote #3) — lyrics done'},
+  ],
+  scott: [
+    {id:'sc1', text:'Call Kene to confirm coming to Mississippi'},
+    {id:'sc2', text:'Secure a place to stay with Damonte'},
+    {id:'sc3', text:'Plan videos for the Mississippi trip'},
+  ],
+  health: [
+    {id:'h1', text:'Pick up medicine from CVS'},
+    {id:'h2', text:'Make appointment for eye check'},
+  ],
+  finances: [
+    {id:'f1', text:'Do a list of running non-fixed monthly and annual costs from Rocket Mortgage'},
+    {id:'f2', text:'Refine short term budget'},
+    {id:'f3', text:'Create a long term budget'},
+  ],
+  releases: [
+    {
+      id: 'rel1',
+      title: 'Mississippi Matters',
+      color: '#5b9bd5',
+      phases: [
+        {
+          id: 'ph0',
+          label: 'PRE-RELEASE',
+          name: 'Phase 1 — Lyric Video Production',
+          date: 'Before June 12',
+          goal: 'Commission an independent contractor to build the lyric video so it is ready to drop shortly after release day.',
+          tasks: [
+            {id:'mm0a', text:'Find and hire independent contractor for lyric video'},
+            {id:'mm0b', text:'Send contractor the master audio file + any visual direction/references'},
+            {id:'mm0c', text:'Review and approve lyric video draft'},
+            {id:'mm0d', text:'Receive final lyric video file from contractor'},
+          ]
+        },
+        {
+          id: 'ph1',
+          label: 'PRE-RELEASE',
+          name: 'Phase 2 — Truck Origin Drop',
+          date: 'Saturday, June 7',
+          goal: 'Humanize the song\'s creation, bridge your audience with Scott\'s campaign, and drop the first audio snippet.',
+          tasks: [
+            {id:'mm1', text:"Scott's campaign drops truck video — you breaking down how you wrote the song, closing with a high-energy snippet"},
+            {id:'mm2', text:"Share Scott's video to your feed or stories with caption: \"Sat down in the truck with Scott to talk about why I wrote this and how the vision came together. Mississippi is a lot of things, but above all, Mississippi Matters. Hear the story and a first listen to the track. Dropping everywhere June 12th.\""},
+          ]
+        },
+        {
+          id: 'ph1b',
+          label: 'PRE-RELEASE',
+          name: 'Phase 2b — 15-Second Lyric Video Preview',
+          date: 'Before June 12',
+          goal: 'Tease the lyric video itself as a content piece — make the video feel like an event before the song even drops.',
+          tasks: [
+            {id:'mm_prev1', text:'Cut a 15-second preview clip from the lyric video — pick the most visually striking moment'},
+            {id:'mm_prev2', text:'Post the 15-second preview to feed/stories with caption teasing both the song and the full lyric video dropping after release'},
+          ]
+        },
+        {
+          id: 'ph2',
+          label: 'PRE-RELEASE',
+          name: 'Phase 3 — Dynamic Swell Countdown',
+          date: 'Thursday, June 11',
+          goal: 'Stop people mid-scroll using the track\'s most dramatic musical moment.',
+          tasks: [
+            {id:'mm3', text:'Post 15-second visualizer or countdown graphic — use clip from 0:17 mark where trap beat drops and cello surges'},
+            {id:'mm4', text:'Caption: "Midnight tonight. Let it bloom. 🎻🥁 #MississippiMatters"'},
+          ]
+        },
+        {
+          id: 'ph3',
+          label: 'RELEASE DAY',
+          name: 'Phase 4 — Release Day',
+          date: 'Friday, June 12',
+          goal: 'Flood the timeline with the full master track and drive traffic to the link.',
+          tasks: [
+            {id:'mm5', text:'Post compelling visualizer or audio graphic with full polished audio — lyric video drops in a few days'},
+            {id:'mm6', text:'Caption: "\'Mississippi Matters\' is officially live. I wanted to build an anthem that combines modern energy with prestigious, organic grit—something that sounds like the actual heart of this state. Go stream it, share it, and let it move. Link in bio."'},
+          ]
+        },
+        {
+          id: 'ph3b',
+          label: 'POST-RELEASE',
+          name: 'Phase 5 — Full Lyric Video Drop',
+          date: 'A few days after June 12',
+          goal: 'Give the song a second moment of energy after release day — the lyric video as its own event.',
+          tasks: [
+            {id:'mm_lv1', text:'Post the full lyric video to all platforms'},
+            {id:'mm_lv2', text:'Caption: "The full lyric video for \'Mississippi Matters\' is here. Every word. Link in bio."'},
+          ]
+        },
+        {
+          id: 'ph4',
+          label: 'POST-RELEASE',
+          name: 'Phase 6 — Colterra Dance Campaign',
+          date: 'Ongoing after June 12',
+          goal: 'Keep the song alive on the Colterra feed with lo-fi organic content.',
+          tasks: [
+            {id:'mm7', text:'Dance video #1 — weird location, bandana on, song in headphones'},
+            {id:'mm8', text:'Dance video #2'},
+            {id:'mm9', text:'Dance video #3'},
+            {id:'mm10', text:'Dance video #4'},
+            {id:'mm11', text:'Dance video #5'},
+            {id:'mm12', text:'Dance video #6'},
+            {id:'mm13', text:'Dance video #7'},
+            {id:'mm14', text:'Dance video #8'},
+            {id:'mm15', text:'Dance video #9'},
+            {id:'mm16', text:'Dance video #10'},
+            {id:'mm17', text:'Dance video #11'},
+            {id:'mm18', text:'Dance video #12'},
+            {id:'mm19', text:'Dance video #13'},
+            {id:'mm20', text:'Dance video #14'},
+            {id:'mm21', text:'Dance video #15'},
+            {id:'mm22', text:'Dance video #16'},
+            {id:'mm23', text:'Dance video #17'},
+            {id:'mm24', text:'Dance video #18'},
+            {id:'mm25', text:'Dance video #19'},
+            {id:'mm26', text:'Dance video #20 — final post'},
+          ]
+        },
+      ]
+    }
+  ],
+  rules: [
+    {id:'r1',title:'The Spine',body:'Rap Fiction is the operating system. The genre, the worldview, the DNA behind music, prose, and film. Everything runs on it.',c:'#c9a84c'},
+    {id:'r2',title:'Author vs. Avatar',body:'Andrew Robert Colom writes. Robert Colterra performs. Same blood, different jobs: I put it on the page, he takes it to the stage and the feed.',c:'#c9a84c'},
+    {id:'r3',title:'The Tagline',body:'The Writer. The Money Maker. / The mask is my face. / Fiction, music, film, family: one bloodline, one mythology.',c:'#c9a84c'},
+    {id:'r4',title:'Substack Description',body:"Rap's honesty about power meets fiction's craft: prose poems, flash-fiction battles, and the road to the first Rap Fiction novel.",c:'#c9a84c'},
+    {id:'r5',title:'Central Thesis',body:"I'm not a rapper. I could never rap on beat. I invented Rap Fiction because I hear rap in my fiction. Fiction hasn't listened to rap to innovate. That's the gap.",c:'#c9a84c'},
+    {id:'r6',title:'Location Rule',body:"Mask on your feed. Face on Scott's feed. The platform decides — you never have to judge in the moment.",c:'#c0392b'},
+    {id:'r7',title:'The Share Rule',body:"You share Scott's content to your feed. You point at it. The persona never comments on campaign content in character.",c:'#c0392b'},
+    {id:'r8',title:'Mississippi Matters Firewall',body:'The Easiest Thing, Never Quit, Mississippi Matters — campaign side only. Dear Daughter — campaign side. None of it releases under Colterra or on the masked feed. Ever.',c:'#c0392b'},
+    {id:'r9',title:'Colterra Is a Heteronym',body:"He might be a real person. He might not be. He exists independently. He never explains himself. He never confirms or denies. He never says the mask is his face — that is Andrew's line.",c:'#e84393'},
+    {id:'r10',title:'The Mask',body:'The bandana is the mask. Not a costume — a choice. Videos mixed with still photos. Dancing. Audio and visual work that hides the face. That restraint is the aesthetic.',c:'#e84393'},
+    {id:'r11',title:'Fiction and Reality',body:'The line between Andrew Robert Colom and Robert Colterra is deliberate and unresolved. Neither ever says they are the same person OR definitely different people. The mystery lives in the middle.',c:'#e84393'},
+    {id:'r12',title:'Vocalist Tier',body:'Lyric videos = steady drip, every track stays alive. Music videos = events, reserved for collaborators you bring back as recurring cast.',c:'#c9a84c'},
+  ],
+};
+
+// ── STATE ──────────────────────────────────────────────────────
+let state = JSON.parse(JSON.stringify(DEFAULTS));
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(SK);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      // merge saved over defaults so new default fields don't vanish
+      state = Object.assign({}, DEFAULTS, saved);
+    }
+  } catch(e) {}
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(SK, JSON.stringify(state));
+    const bar = document.getElementById('savebar');
+    bar.textContent = 'SAVED ✓';
+    setTimeout(() => { bar.textContent = ''; }, 1200);
+  } catch(e) {}
+}
+
+// ── IDS ───────────────────────────────────────────────────────
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+
+// ── EDIT MODE ─────────────────────────────────────────────────
+function toggleEdit() {
+  editMode = !editMode;
+  editingId = null;
+  document.getElementById('editToggle').classList.toggle('active', editMode);
+  render();
+}
+
+// ── CHECKBOX ──────────────────────────────────────────────────
+function tog(k) {
+  state.done[k] = !state.done[k];
+  saveState();
+  render();
+}
+
+// ── GENERIC LIST OPS ──────────────────────────────────────────
+function deleteItem(listKey, id) {
+  state[listKey] = state[listKey].filter(x => x.id !== id);
+  saveState(); render();
+}
+
+function startEdit(id) { editingId = id; render(); }
+function cancelEdit() { editingId = null; render(); }
+
+function saveCheckItem(listKey, id) {
+  const inp = document.getElementById('ei-text-' + id);
+  const priEl = document.getElementById('ei-pri-' + id);
+  if (!inp) return;
+  const item = state[listKey].find(x => x.id === id);
+  if (item) {
+    item.text = inp.value.trim() || item.text;
+    if (priEl) item.priority = priEl.value;
+  }
+  editingId = null;
+  saveState(); render();
+}
+
+function addCheckItem(listKey, priority) {
+  const inp = document.getElementById('new-item-' + listKey + (priority||''));
+  if (!inp || !inp.value.trim()) return;
+  const newItem = { id: uid(), text: inp.value.trim() };
+  if (priority !== undefined) newItem.priority = priority;
+  state[listKey].push(newItem);
+  inp.value = '';
+  saveState(); render();
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function chkHTML(id, color) {
+  const on = !!state.done[id];
+  return `<div class="chk${on?' '+color:''}" onclick="tog('${esc(id)}')">${on?'<span class="cm">✓</span>':''}</div>`;
+}
+
+function priStyle(pri) {
+  return pri==='high'?'background:#fff0f0;color:#c0392b':pri==='medium'?'background:#fffbf0;color:#b8860b':'background:#f0f0f0;color:#aaa';
+}
+
+// ── ROW RENDER ────────────────────────────────────────────────
+function rowHTML(listKey, item, color, showPri) {
+  const dn = !!state.done[item.id];
+  const priTag = (showPri && item.priority) ? `<span class="pri" style="${priStyle(item.priority)}">${item.priority.toUpperCase()}</span>` : '';
+
+  if (editMode && editingId === item.id) {
+    const priSelect = showPri ? `
+      <div><label>Priority</label>
+      <select id="ei-pri-${esc(item.id)}">
+        <option value="high"${item.priority==='high'?' selected':''}>High</option>
+        <option value="medium"${item.priority==='medium'?' selected':''}>Medium</option>
+        <option value="low"${item.priority==='low'?' selected':''}>Low</option>
+      </select></div>` : '';
+    return `<div class="tr-edit-wrap">
+      <div class="edit-form">
+        <label>Task text</label>
+        <textarea id="ei-text-${esc(item.id)}">${esc(item.text)}</textarea>
+        ${priSelect}
+        <div class="form-btns">
+          <button class="btn-save-item" onclick="saveCheckItem('${listKey}','${esc(item.id)}')">SAVE</button>
+          <button class="btn-cancel" onclick="cancelEdit()">CANCEL</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  const editBtns = editMode ? `<div class="edit-actions">
+    <button class="btn-edit" onclick="startEdit('${esc(item.id)}')">EDIT</button>
+    <button class="btn-del" onclick="deleteItem('${listKey}','${esc(item.id)}')">✕</button>
+  </div>` : '';
+
+  return `<div class="tr">
+    ${chkHTML(item.id, color)}
+    <div class="tt${dn?' dn':''}" onclick="tog('${esc(item.id)}')">${esc(item.text)}</div>
+    ${priTag}
+    ${editBtns}
+  </div>`;
+}
+
+// ── ADD ROW ───────────────────────────────────────────────────
+function addRowHTML(listKey, priority) {
+  if (!editMode) return '';
+  const inputId = 'new-item-' + listKey + (priority||'');
+  return `<div style="display:flex;gap:6px;margin-top:8px;align-items:center;">
+    <input id="${inputId}" type="text" placeholder="Add new item..." style="flex:1;font-family:'Courier Prime',monospace;font-size:11px;border:1px solid #e0e0e0;border-radius:2px;padding:5px 8px;outline:none;">
+    <button class="btn-add" style="margin-top:0;padding:4px 10px;" onclick="addCheckItem('${listKey}','${priority||''}')">+ ADD</button>
+  </div>`;
+}
+
+// ── PROPERTIES TAB ────────────────────────────────────────────
+function saveProp(id) {
+  const fields = ['name','role','status','color','platform','desc','action'];
+  const item = state.properties.find(p => p.id === id);
+  if (!item) return;
+  fields.forEach(f => {
+    const el = document.getElementById('pe-'+f+'-'+id);
+    if (el) item[f] = el.value;
+  });
+  editingId = null;
+  saveState(); render();
+}
+
+function addProp() {
+  const newProp = {
+    id: uid(),
+    name: 'New Property',
+    role: 'ROLE',
+    status: 'ACTIVE',
+    color: '#c9a84c',
+    platform: '',
+    desc: '',
+    action: ''
+  };
+  state.properties.push(newProp);
+  editingId = newProp.id;
+  saveState(); render();
+}
+
+function renderProperties() {
+  let h = `<div class="lbl">Brand properties — each has one job</div>`;
+  state.properties.forEach(p => {
+    if (editMode && editingId === p.id) {
+      h += `<div class="prop-edit-form">
+        <div class="form-row">
+          <div><label>Name</label><input id="pe-name-${p.id}" value="${esc(p.name)}"></div>
+          <div><label>Color</label><input id="pe-color-${p.id}" type="color" value="${p.color}" style="height:30px;padding:2px 4px;width:100%;cursor:pointer;"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Role</label><input id="pe-role-${p.id}" value="${esc(p.role)}"></div>
+          <div><label>Status</label>
+            <select id="pe-status-${p.id}">
+              <option${p.status==='ACTIVE'?' selected':''}>ACTIVE</option>
+              <option${p.status==='DORMANT'?' selected':''}>DORMANT</option>
+              <option${p.status==='FIREWALLED'?' selected':''}>FIREWALLED</option>
+            </select>
+          </div>
+        </div>
+        <label>Platform</label><input id="pe-platform-${p.id}" value="${esc(p.platform)}">
+        <label>Description</label><textarea id="pe-desc-${p.id}">${esc(p.desc)}</textarea>
+        <label>Action needed</label><textarea id="pe-action-${p.id}">${esc(p.action)}</textarea>
+        <div class="form-btns">
+          <button class="btn-save-item" onclick="saveProp('${p.id}')">SAVE</button>
+          <button class="btn-cancel" onclick="cancelEdit()">CANCEL</button>
+          <button class="btn-del" onclick="deleteItem('properties','${p.id}')">DELETE</button>
+        </div>
+      </div>`;
+      return;
+    }
+
+    const ss = p.status==='ACTIVE'?`background:${p.color}20;color:${p.color}`:p.status==='DORMANT'?'background:#f0f0f0;color:#aaa':'background:#fff0f0;color:#c0392b';
+    const editBtn = editMode ? `<button class="btn-edit" style="margin-top:6px;" onclick="startEdit('${p.id}')">EDIT</button>` : '';
+    h += `<div class="prop" style="border-left-color:${p.color}">
+      <div class="prop-top">
+        <div class="prop-name" style="color:${p.color}">${esc(p.name)}</div>
+        <div class="prop-right">
+          <span class="badge" style="${ss}">${esc(p.status)}</span>
+          <span class="badge" style="background:#f0f0f0;color:#999">${esc(p.role)}</span>
+          ${editBtn}
+        </div>
+      </div>
+      <div class="prop-platform">${esc(p.platform)}</div>
+      <div class="prop-desc">${esc(p.desc)}</div>
+      <div class="prop-action">${esc(p.action)}</div>
+    </div>`;
+  });
+
+  if (editMode) {
+    h += `<button class="btn-add" onclick="addProp()">+ ADD PROPERTY</button>`;
+  }
+  return h;
+}
+
+// ── BUILD TAB ─────────────────────────────────────────────────
+function renderBuild() {
+  const high = state.build.filter(b=>b.priority==='high');
+  const med  = state.build.filter(b=>b.priority==='medium');
+  const low  = state.build.filter(b=>b.priority==='low');
+  const count = state.build.filter(b=>!!state.done[b.id]).length;
+  const pct = Math.round((count/Math.max(state.build.length,1))*100);
+
+  return `<div class="prog-lbl">${count} of ${state.build.length} tasks complete</div>
+    <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%;background:#c9a84c"></div></div>
+    <div class="lbl">High priority — do these first</div>
+    <div class="box" style="border-left-color:#c0392b;background:#fff5f5">
+      ${high.map(b=>rowHTML('build',b,'red',true)).join('')}
+      ${addRowHTML('build','high')}
+    </div>
+    <div class="lbl" style="margin-top:14px">Medium priority</div>
+    <div class="box" style="border-left-color:#c9a84c">
+      ${med.map(b=>rowHTML('build',b,'gld',true)).join('')}
+      ${addRowHTML('build','medium')}
+    </div>
+    <div class="lbl" style="margin-top:14px">Low priority — after Colterra activates</div>
+    <div class="box" style="border-left-color:#aaa">
+      ${low.map(b=>rowHTML('build',b,'gld',true)).join('')}
+      ${addRowHTML('build','low')}
+    </div>`;
+}
+
+// ── COLTERRA TAB (activation only) ────────────────────────────
+function renderColterra() {
+  const cDone = state.colterra.filter(c=>!!state.done[c.id]).length;
+  const cPct = Math.round((cDone/Math.max(state.colterra.length,1))*100);
+  return `<div class="colterra-header">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#e84393;letter-spacing:0.1em">Robert Colterra</div>
+      <div style="font-size:9px;color:#c080a0;letter-spacing:0.18em;margin:2px 0 7px;text-transform:uppercase">Heteronym · Dormant until novel launch</div>
+      <div style="font-size:11px;color:#555;line-height:1.55">May be a real person. May not be. Exists independently of Andrew. Never explains himself. All five conditions below must be met before activating.</div>
+    </div>
+    <div class="prog-lbl">${cDone} of ${state.colterra.length} activation conditions met</div>
+    <div class="prog-wrap"><div class="prog-fill" style="width:${cPct}%;background:#e84393"></div></div>
+    <div class="lbl">Activation conditions</div>
+    <div class="box" style="border-left-color:#e84393;background:#fff0f7;margin-bottom:18px">
+      ${state.colterra.map(c=>rowHTML('colterra',c,'pk',false)).join('')}
+      ${addRowHTML('colterra','')}
+    </div>
+    <div class="lbl" style="margin-top:14px">The Lost Failure — The EBTF Album</div>
+    <div class="alert" style="background:#fff0f7;border:1px solid #f0c0d8;border-left:3px solid #e84393">
+      <strong style="color:#e84393">COLTERRA + BOOK LAUNCH TOGETHER</strong>
+      <span style="color:#555">One album per Rap Fiction book. Cheater is done. Columbus' Echo needs final mix + master — one step from release.</span>
+    </div>
+    <div class="box" style="border-left-color:#e84393;background:#fff0f7">
+      ${state.album.map(a=>rowHTML('album',a,'pk',false)).join('')}
+      ${addRowHTML('album','')}
+    </div>`;
+}
+
+// ── EBTF TAB ──────────────────────────────────────────────────
+function renderEBTF() {
+  const eDone = state.ebtf.filter(e=>!!state.done[e.id]).length;
+  const ePct = Math.round((eDone/Math.max(state.ebtf.length,1))*100);
+  return `<div style="background:#f0f5ff;border:1px solid #c8d8f0;border-left:3px solid #5b9bd5;border-radius:3px;padding:13px 14px;margin-bottom:12px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#5b9bd5;letter-spacing:0.1em">EBTF — The Novel</div>
+      <div style="font-size:9px;color:#8aabcf;letter-spacing:0.18em;margin:2px 0 7px;text-transform:uppercase">All routes open · Book comes out no matter what</div>
+      <div style="font-size:11px;color:#555;line-height:1.55">Follow-up to Miranda + Charlotte scheduled 6.3.26. Running agents, indy publishers, and academic publishers in parallel. Self-publish if necessary.</div>
+    </div>
+    <div class="prog-lbl">${eDone} of ${state.ebtf.length} tasks complete</div>
+    <div class="prog-wrap"><div class="prog-fill" style="width:${ePct}%;background:#5b9bd5"></div></div>
+    <div class="lbl">Publishing checklist</div>
+    <div class="box" style="border-left-color:#5b9bd5;background:#f0f5ff;margin-bottom:18px">
+      ${state.ebtf.map(e=>rowHTML('ebtf',e,'gld',false)).join('')}
+      ${addRowHTML('ebtf','')}
+    </div>`;
+}
+
+// ── SCOTT'S CAMPAIGN TAB ──────────────────────────────────────
+function renderScott() {
+  const sDone = state.scott.filter(s=>!!state.done[s.id]).length;
+  const sPct = Math.round((sDone/Math.max(state.scott.length,1))*100);
+  return `<div style="background:#f0f8ff;border:1px solid #b8d8f0;border-left:3px solid #5b9bd5;border-radius:3px;padding:13px 14px;margin-bottom:12px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#5b9bd5;letter-spacing:0.1em">Scott Colom's Campaign</div>
+      <div style="font-size:9px;color:#8aabcf;letter-spacing:0.18em;margin:2px 0 7px;text-transform:uppercase">Firewalled · Your face, not the mask</div>
+      <div style="font-size:11px;color:#555;line-height:1.55">Lives on Scott's feed only. You share — the persona never narrates. Firewall holds.</div>
+    </div>
+    <div class="prog-lbl">${sDone} of ${state.scott.length} tasks complete</div>
+    <div class="prog-wrap"><div class="prog-fill" style="width:${sPct}%;background:#5b9bd5"></div></div>
+    <div class="lbl">Trip + logistics</div>
+    <div class="box" style="border-left-color:#5b9bd5;background:#f0f8ff;">
+      ${state.scott.map(s=>rowHTML('scott',s,'gld',false)).join('')}
+      ${addRowHTML('scott','')}
+    </div>`;
+}
+
+// ── HEALTH TAB ────────────────────────────────────────────────
+function renderHealth() {
+  const hDone = state.health.filter(h=>!!state.done[h.id]).length;
+  const hPct = Math.round((hDone/Math.max(state.health.length,1))*100);
+  return `<div style="background:#f0fff4;border:1px solid #b8e8cc;border-left:3px solid #4caf7d;border-radius:3px;padding:13px 14px;margin-bottom:12px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#4caf7d;letter-spacing:0.1em">Health</div>
+      <div style="font-size:9px;color:#7acca0;letter-spacing:0.18em;margin:2px 0 7px;text-transform:uppercase">Non-negotiable · Handle it</div>
+    </div>
+    <div class="prog-lbl">${hDone} of ${state.health.length} tasks complete</div>
+    <div class="prog-wrap"><div class="prog-fill" style="width:${hPct}%;background:#4caf7d"></div></div>
+    <div class="lbl">To do</div>
+    <div class="box" style="border-left-color:#4caf7d;background:#f0fff4;">
+      ${state.health.map(h=>rowHTML('health',h,'grn',false)).join('')}
+      ${addRowHTML('health','')}
+    </div>`;
+}
+
+// ── FINANCES TAB ──────────────────────────────────────────────
+function renderFinances() {
+  const fDone = state.finances.filter(f=>!!state.done[f.id]).length;
+  const fPct = Math.round((fDone/Math.max(state.finances.length,1))*100);
+  return `<div style="background:#fffbf0;border:1px solid #e8d88a;border-left:3px solid #c9a84c;border-radius:3px;padding:13px 14px;margin-bottom:12px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#c9a84c;letter-spacing:0.1em">Finances</div>
+      <div style="font-size:9px;color:#b8980a;letter-spacing:0.18em;margin:2px 0 7px;text-transform:uppercase">Get the numbers right</div>
+    </div>
+    <div class="prog-lbl">${fDone} of ${state.finances.length} tasks complete</div>
+    <div class="prog-wrap"><div class="prog-fill" style="width:${fPct}%;background:#c9a84c"></div></div>
+    <div class="lbl">To do</div>
+    <div class="box" style="border-left-color:#c9a84c;background:#fffbf0;">
+      ${state.finances.map(f=>rowHTML('finances',f,'gld',false)).join('')}
+      ${addRowHTML('finances','')}
+    </div>`;
+}
+
+// ── RULES TAB ─────────────────────────────────────────────────
+function saveRule(id) {
+  const item = state.rules.find(r=>r.id===id);
+  if (!item) return;
+  const titleEl = document.getElementById('re-title-'+id);
+  const bodyEl  = document.getElementById('re-body-'+id);
+  const colorEl = document.getElementById('re-color-'+id);
+  if (titleEl) item.title = titleEl.value.trim();
+  if (bodyEl)  item.body  = bodyEl.value.trim();
+  if (colorEl) item.c     = colorEl.value;
+  editingId = null;
+  saveState(); render();
+}
+
+function addRule() {
+  const newRule = { id: uid(), title: 'New Rule', body: '', c: '#c9a84c' };
+  state.rules.push(newRule);
+  editingId = newRule.id;
+  saveState(); render();
+}
+
+function renderRules() {
+  const identity = state.rules.filter(r=>['r1','r2','r3','r4','r5'].includes(r.id) || r._group==='identity');
+  const firewall = state.rules.filter(r=>['r6','r7','r8'].includes(r.id) || r._group==='firewall');
+  const persona  = state.rules.filter(r=>['r9','r10','r11'].includes(r.id) || r._group==='persona');
+  const content  = state.rules.filter(r=>['r12'].includes(r.id) || r._group==='content');
+  // unclassified new rules
+  const classified = new Set([...identity,...firewall,...persona,...content].map(r=>r.id));
+  const other = state.rules.filter(r=>!classified.has(r.id));
+
+  function ruleCard(r) {
+    if (editMode && editingId === r.id) {
+      return `<div class="prop-edit-form" style="margin-bottom:8px;">
+        <div class="form-row">
+          <div style="flex:3"><label>Title</label><input id="re-title-${r.id}" value="${esc(r.title)}"></div>
+          <div style="flex:1"><label>Color</label><input id="re-color-${r.id}" type="color" value="${r.c}" style="height:30px;width:100%;padding:2px 4px;cursor:pointer;"></div>
+        </div>
+        <label>Body</label><textarea id="re-body-${r.id}">${esc(r.body)}</textarea>
+        <div class="form-btns">
+          <button class="btn-save-item" onclick="saveRule('${r.id}')">SAVE</button>
+          <button class="btn-cancel" onclick="cancelEdit()">CANCEL</button>
+          <button class="btn-del" onclick="deleteItem('rules','${r.id}')">DELETE</button>
+        </div>
+      </div>`;
+    }
+    const bg = r.c==='#c0392b'?'#fff5f5':'#fafafa';
+    const editBtn = editMode ? `<button class="btn-edit" style="margin-top:4px;" onclick="startEdit('${r.id}')">EDIT</button>` : '';
+    return `<div class="box" style="border-left-color:${r.c};background:${bg};margin-bottom:8px;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+        <div class="box-title" style="color:${r.c}">${esc(r.title)}</div>
+        ${editBtn}
+      </div>
+      <div class="box-body">${esc(r.body)}</div>
+    </div>`;
+  }
+
+  function section(label, arr) {
+    if (!arr.length && !editMode) return '';
+    return `<div class="lbl" style="margin-top:14px">${label}</div>${arr.map(ruleCard).join('')}`;
+  }
+
+  return `<div class="lbl">Locked — these don't get debated in the moment</div>
+    ${section('Identity', identity)}
+    ${section('Firewall', firewall)}
+    ${section('The Persona', persona)}
+    ${section('Content', content)}
+    ${other.length ? section('Other', other) : ''}
+    ${editMode ? `<button class="btn-add" onclick="addRule()">+ ADD RULE</button>` : ''}`;
+}
+
+// ── RELEASES TAB ──────────────────────────────────────────────
+function renderReleases() {
+  const releases = state.releases || [];
+  if (!releases.length) return `<div class="lbl">No releases yet</div>${editMode?`<button class="btn-add" onclick="addRelease()">+ ADD RELEASE</button>`:''}`;
+
+  let h = `<div class="lbl">Social Media Release Tracker</div>`;
+
+  releases.forEach(rel => {
+    const allTasks = rel.phases.flatMap(ph => ph.tasks);
+    const doneCt = allTasks.filter(t => !!state.done[t.id]).length;
+    const pct = Math.round((doneCt / Math.max(allTasks.length, 1)) * 100);
+
+    const editBtn = editMode ? `<button class="btn-edit" style="margin-left:8px;vertical-align:middle;" onclick="startEdit('${rel.id}')">EDIT</button>` : '';
+
+    h += `<div style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.1em;color:${rel.color}">${esc(rel.title)}${editBtn}</div>
+        <span style="font-size:10px;color:#aaa;letter-spacing:0.15em;">${doneCt}/${allTasks.length} DONE</span>
+      </div>
+      <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%;background:${rel.color}"></div></div>`;
+
+    if (editMode && editingId === rel.id) {
+      h += `<div class="edit-form">
+        <label>Release Title</label><input id="rel-title-${rel.id}" value="${esc(rel.title)}">
+        <label>Color</label><input id="rel-color-${rel.id}" type="color" value="${rel.color}" style="height:30px;width:100%;padding:2px 4px;cursor:pointer;">
+        <div class="form-btns">
+          <button class="btn-save-item" onclick="saveRelease('${rel.id}')">SAVE</button>
+          <button class="btn-cancel" onclick="cancelEdit()">CANCEL</button>
+          <button class="btn-del" onclick="deleteRelease('${rel.id}')">DELETE RELEASE</button>
+        </div>
+      </div>`;
+    }
+
+    rel.phases.forEach(ph => {
+      const phDone = ph.tasks.filter(t => !!state.done[t.id]).length;
+      const labelColor = ph.label === 'RELEASE DAY' ? '#c0392b' : ph.label === 'POST-RELEASE' ? '#4caf7d' : '#5b9bd5';
+      const labelBg = ph.label === 'RELEASE DAY' ? '#fff0f0' : ph.label === 'POST-RELEASE' ? '#f0fff4' : '#f0f5ff';
+
+      h += `<div class="box" style="border-left-color:${rel.color};margin-bottom:10px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+          <div>
+            <span class="badge" style="background:${labelBg};color:${labelColor};margin-bottom:4px;display:inline-block;">${esc(ph.label)}</span>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.08em;color:#333;">${esc(ph.name)}</div>
+            <div style="font-size:10px;color:#aaa;margin-bottom:4px;">${esc(ph.date)}</div>
+          </div>
+          <span style="font-size:9px;color:#aaa;letter-spacing:0.1em;flex-shrink:0;">${phDone}/${ph.tasks.length}</span>
+        </div>
+        <div style="font-size:11px;color:#888;font-style:italic;margin-bottom:8px;line-height:1.5;border-left:2px solid #eee;padding-left:8px;">${esc(ph.goal)}</div>`;
+
+      ph.tasks.forEach(task => {
+        if (editMode && editingId === task.id) {
+          h += `<div class="edit-form">
+            <label>Task</label><textarea id="ei-text-${task.id}">${esc(task.text)}</textarea>
+            <div class="form-btns">
+              <button class="btn-save-item" onclick="saveReleaseTask('${rel.id}','${ph.id}','${task.id}')">SAVE</button>
+              <button class="btn-cancel" onclick="cancelEdit()">CANCEL</button>
+            </div>
+          </div>`;
+        } else {
+          const dn = !!state.done[task.id];
+          const editBtns = editMode ? `<div class="edit-actions">
+            <button class="btn-edit" onclick="startEdit('${task.id}')">EDIT</button>
+            <button class="btn-del" onclick="deleteReleaseTask('${rel.id}','${ph.id}','${task.id}')">✕</button>
+          </div>` : '';
+          h += `<div class="tr">
+            <div class="chk${dn?' gld':''}" onclick="tog('${task.id}')">${dn?'<span class="cm">✓</span>':''}</div>
+            <div class="tt${dn?' dn':''}" onclick="tog('${task.id}')">${esc(task.text)}</div>
+            ${editBtns}
+          </div>`;
+        }
+      });
+
+      if (editMode) {
+        h += `<div style="display:flex;gap:6px;margin-top:8px;align-items:center;">
+          <input id="new-task-${ph.id}" type="text" placeholder="Add task..." style="flex:1;font-family:'Courier Prime',monospace;font-size:11px;border:1px solid #e0e0e0;border-radius:2px;padding:5px 8px;outline:none;">
+          <button class="btn-add" style="margin-top:0;padding:4px 10px;" onclick="addReleaseTask('${rel.id}','${ph.id}')">+ ADD</button>
+        </div>`;
+      }
+
+      h += `</div>`;
+    });
+
+    if (editMode) {
+      h += `<button class="btn-add" onclick="addPhase('${rel.id}')">+ ADD PHASE</button>`;
+    }
+
+    h += `</div>`;
+  });
+
+  if (editMode) {
+    h += `<button class="btn-add" style="margin-top:8px;" onclick="addRelease()">+ ADD RELEASE</button>`;
+  }
+
+  return h;
+}
+
+function saveRelease(relId) {
+  const rel = (state.releases||[]).find(r=>r.id===relId);
+  if (!rel) return;
+  const t = document.getElementById('rel-title-'+relId);
+  const c = document.getElementById('rel-color-'+relId);
+  if (t) rel.title = t.value.trim() || rel.title;
+  if (c) rel.color = c.value;
+  editingId = null;
+  saveState(); render();
+}
+
+function deleteRelease(relId) {
+  state.releases = (state.releases||[]).filter(r=>r.id!==relId);
+  saveState(); render();
+}
+
+function addRelease() {
+  if (!state.releases) state.releases = [];
+  const newRel = { id: uid(), title: 'New Release', color: '#c9a84c', phases: [] };
+  state.releases.push(newRel);
+  editingId = newRel.id;
+  saveState(); render();
+}
+
+function addPhase(relId) {
+  const rel = (state.releases||[]).find(r=>r.id===relId);
+  if (!rel) return;
+  rel.phases.push({ id: uid(), label: 'PRE-RELEASE', name: 'New Phase', date: '', goal: '', tasks: [] });
+  saveState(); render();
+}
+
+function addReleaseTask(relId, phId) {
+  const rel = (state.releases||[]).find(r=>r.id===relId);
+  if (!rel) return;
+  const ph = rel.phases.find(p=>p.id===phId);
+  if (!ph) return;
+  const inp = document.getElementById('new-task-'+phId);
+  if (!inp || !inp.value.trim()) return;
+  ph.tasks.push({ id: uid(), text: inp.value.trim() });
+  inp.value = '';
+  saveState(); render();
+}
+
+function saveReleaseTask(relId, phId, taskId) {
+  const rel = (state.releases||[]).find(r=>r.id===relId);
+  if (!rel) return;
+  const ph = rel.phases.find(p=>p.id===phId);
+  if (!ph) return;
+  const task = ph.tasks.find(t=>t.id===taskId);
+  if (!task) return;
+  const inp = document.getElementById('ei-text-'+taskId);
+  if (inp) task.text = inp.value.trim() || task.text;
+  editingId = null;
+  saveState(); render();
+}
+
+function deleteReleaseTask(relId, phId, taskId) {
+  const rel = (state.releases||[]).find(r=>r.id===relId);
+  if (!rel) return;
+  const ph = rel.phases.find(p=>p.id===phId);
+  if (!ph) return;
+  ph.tasks = ph.tasks.filter(t=>t.id!==taskId);
+  saveState(); render();
+}
+
+// ── MAIN RENDER ───────────────────────────────────────────────
+function switchTab(t) { tab=t; editingId=null; render(); }
+
+function render() {
+  const TABS=[
+    ['properties','Properties'],
+    ['build','Build Queue'],
+    ['colterra','Colterra'],
+    ['ebtf','EBTF'],
+    ['scott',"Scott's Campaign"],
+    ['releases','Releases'],
+    ['health','Health'],
+    ['finances','Finances'],
+    ['rules','Rules'],
+  ];
+  document.getElementById('tabs').innerHTML = TABS.map(([id,lb])=>
+    `<button class="tab${tab===id?' on':''}" onclick="switchTab('${id}')">${lb}</button>`
+  ).join('');
+
+  let content = '';
+  if (tab==='properties') content = renderProperties();
+  else if (tab==='build')     content = renderBuild();
+  else if (tab==='colterra')  content = renderColterra();
+  else if (tab==='ebtf')      content = renderEBTF();
+  else if (tab==='scott')     content = renderScott();
+  else if (tab==='releases')  content = renderReleases();
+  else if (tab==='health')    content = renderHealth();
+  else if (tab==='finances')  content = renderFinances();
+  else if (tab==='rules')     content = renderRules();
+  document.getElementById('body').innerHTML = content;
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+loadState();
+render();
+</script>
+</body>
+</html>
