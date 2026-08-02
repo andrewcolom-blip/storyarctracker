@@ -647,44 +647,6 @@ function renderEBTF() {
     <div class="box" style="border-left-color:#5b9bd5;background:#f0f5ff;margin-bottom:12px">
       ${state.academic.map(a=>rowHTML('academic',a,'gld',false)).join('')}
       ${addRowHTML('academic','')}
-    </div>
-    <div class="lbl">Academic presses — full reference</div>
-    <div style="overflow-x:auto;margin-bottom:18px;">
-      <table style="width:100%;border-collapse:collapse;font-size:11px;font-family:'Courier Prime',monospace;">
-        <thead>
-          <tr style="background:#e8f0fc;border-bottom:2px solid #c8d8f0;">
-            <th style="text-align:left;padding:7px 10px;color:#5b9bd5;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:0.1em;font-weight:normal;">Contest</th>
-            <th style="text-align:left;padding:7px 10px;color:#5b9bd5;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:0.1em;font-weight:normal;">Contact</th>
-            <th style="text-align:left;padding:7px 10px;color:#5b9bd5;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:0.1em;font-weight:normal;">Status</th>
-            <th style="text-align:left;padding:7px 10px;color:#5b9bd5;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:0.1em;font-weight:normal;">Deadline</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${[
-            ['Dzanc Short Story Collection Contest','NA','submitted','10.1.26'],
-            ['UNO / LSU New Orleans Press Publishing Lab Prize','NA','TBD','8.31.26'],
-            ['Iowa Short Fiction Award / John Simmons Short Fiction Award','NA','TBD','8.31.26'],
-            ['University of Wisconsin Press','NA','TBD','9.1.26'],
-            ['UMass Press, Juniper Prize for Fiction','NA','TBD','9.30.26'],
-            ['FC2 Ronald Sukenick Innovative Fiction Prize (University of Alabama Press)','NA','TBD','11.1.26'],
-            ['West Virginia University Press','NA','TBD','NA'],
-            ['Wayne State University Press, Made in Michigan Writers Series','NA','TBD','NA'],
-            ['Mercer University Press','NA','TBD','NA'],
-            ['SFA Press, Stephen F. Austin State University','NA','TBD','NA'],
-            ['Northwestern University Press, TriQuarterly Books and Curbstone','NA','TBD','NA'],
-          ].map((r,i) => {
-            const bg = i%2===0 ? '#f0f5ff' : '#f8faff';
-            const statusColor = r[2]==='submitted' ? 'color:#4caf7d;font-weight:700;' : 'color:#aaa;';
-            const deadlineColor = r[3]==='NA' ? 'color:#ccc;' : 'color:#555;';
-            return `<tr style="background:${bg};border-bottom:1px solid #e0e8f8;">
-              <td style="padding:7px 10px;color:#333;line-height:1.4;">${r[0]}</td>
-              <td style="padding:7px 10px;color:#aaa;">${r[1]}</td>
-              <td style="padding:7px 10px;${statusColor}">${r[2]}</td>
-              <td style="padding:7px 10px;${deadlineColor}">${r[3]}</td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
     </div>`;
 }
 
