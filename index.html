@@ -190,6 +190,13 @@ const DEFAULTS = {
     {id:'a11',text:'Footnote #2 — TBD'},
     {id:'a12',text:'Judas (Footnote #3) — lyrics done'},
   ],
+  osn: [
+    {id:'osn1', text:'Get OSN.com website organized'},
+    {id:'osn2', text:'Get OSN website completed'},
+    {id:'osn3', text:'Get OSN sign made'},
+    {id:'osn4', text:'Get OSN sign placed on building'},
+    {id:'osn5', text:'Create behind the scenes video about the making of OSN'},
+  ],
   scott: [
     {id:'sc1', text:'Call Kene to confirm coming to Mississippi'},
     {id:'sc2', text:'Secure a place to stay with Damonte'},
@@ -650,6 +657,24 @@ function renderEBTF() {
     </div>`;
 }
 
+// ── ONE SWEET NIGHT TAB ───────────────────────────────────────
+function renderOSN() {
+  const oDone = state.osn.filter(o=>!!state.done[o.id]).length;
+  const oPct = Math.round((oDone/Math.max(state.osn.length,1))*100);
+  return `<div style="background:#0a0a0a;border:1px solid #333;border-left:3px solid #c9a84c;border-radius:3px;padding:13px 14px;margin-bottom:12px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#c9a84c;letter-spacing:0.1em">One Sweet Night</div>
+      <div style="font-size:9px;color:#888;letter-spacing:0.18em;margin:2px 0 7px;text-transform:uppercase">Film · Story ARC Films · IMDb 8.2</div>
+      <div style="font-size:11px;color:#aaa;line-height:1.55">Distributed via Gumroad. Starring J.D. Williams.</div>
+    </div>
+    <div class="prog-lbl">${oDone} of ${state.osn.length} tasks complete</div>
+    <div class="prog-wrap"><div class="prog-fill" style="width:${oPct}%;background:#c9a84c"></div></div>
+    <div class="lbl">To do</div>
+    <div class="box" style="border-left-color:#c9a84c;background:#fffbf0;">
+      ${state.osn.map(o=>rowHTML('osn',o,'gld',false)).join('')}
+      ${addRowHTML('osn','')}
+    </div>`;
+}
+
 // ── SCOTT'S CAMPAIGN TAB ──────────────────────────────────────
 function renderScott() {
   const sDone = state.scott.filter(s=>!!state.done[s.id]).length;
@@ -942,6 +967,7 @@ function render() {
     ['build','Build Queue'],
     ['colterra','Colterra'],
     ['ebtf','EBTF'],
+    ['osn','One Sweet Night'],
     ['scott',"Scott's Campaign"],
     ['releases','Releases'],
     ['health','Health'],
@@ -957,6 +983,7 @@ function render() {
   else if (tab==='build')     content = renderBuild();
   else if (tab==='colterra')  content = renderColterra();
   else if (tab==='ebtf')      content = renderEBTF();
+  else if (tab==='osn')       content = renderOSN();
   else if (tab==='scott')     content = renderScott();
   else if (tab==='releases')  content = renderReleases();
   else if (tab==='health')    content = renderHealth();
